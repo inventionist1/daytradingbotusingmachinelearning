@@ -1,38 +1,36 @@
-import numpy as np # type: ignore
-import nnfs # type: ignore
-from nnfs.datasets import spiral_data # type: ignore
+import tensorflow as tf
 
-nnfs.init()
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+x_train, x_test = x_train / 255.0, x_test / 255.0
 
-class LayerDense:
-    def __init__(self, nInputs, nNeurons):
-        self.weights = 0.1*np.random.randn(nInputs, nNeurons)
-        self.biases = np.zeros((1, nNeurons))
-    def forward(self, inputs):
-        self.output = np.dot(inputs, self.weights) + self.biases
+model = tf.keras.models.Sequential([
+  tf.keras.layers.Flatten(input_shape=(28, 28)),
+  tf.keras.layers.Dense(128, activation='relu'),
+  tf.keras.layers.Dropout(0.2),
+  tf.keras.layers.Dense(10)
+])
 
-class ActivationReLU:
-    def forward(self, inputs):
-        self.output = np.maximum(0, inputs)
+predictions = model(x_train[:1]).numpy()
+predictions
 
-class ACtivationSoftMax:
-    def forward(self, inputs):
-        expValues = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
-        probabilities = expValues / np.sum(expValues, axis=1, keepdims=True)
-        self.output = probabilities
+tf.nn.softmax(predictions).numpy()
 
-X, y = spiral_data(samples=100, classes=3)
+loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 
-dense1 = LayerDense(2,3)
-activation1 = ActivationReLU()
+loss_fn(y_train[:1], predictions).numpy()
 
-dense2 = LayerDense(3, 3)
-activation2 = ACtivationSoftMax()
+model.compile(optimizer='adam',
+              loss=loss_fn,
+              metrics=['accuracy'])
 
-dense1.forward(X)
-activation1.forward(dense1.output)
+model.fit(x_train, y_train, epochs=5)
 
-dense2.forward(activation1.output)
-activation2.forward(dense2.output)
+model.evaluate(x_test,  y_test, verbose=2)
 
-print(activation2.output[:5])
+probability_model = tf.keras.Sequential([
+  model,
+  tf.keras.layers.Softmax()
+])
+
+probability_model(x_test[:5])
