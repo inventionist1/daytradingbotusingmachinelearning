@@ -1,0 +1,8 @@
+{
+    "realEndpoint":"https://paper-api.alpaca.markets/v2",
+    "realKey":"AKYZXBC45I8QU3UVKVRA",
+    "realSecret":"6ZuC4sQUoYvGble3nABuLNkFwUaLSiL2XO9bGq3u",
+    "paperEndpoint":"https://paper-api.alpaca.markets/v2",
+    "paperKey":"PKAA0CEA4R55UGC7TX69",
+    "paperSecret":"Gp6fBWhawWr3lkk8fUFLGluHpjYh3uk5vum3bVmh"
+}
