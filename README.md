@@ -1,1 +1,1 @@
-idk yet bro im still learning what tenserflow is
+imma make a day trading bot so i make money passively
