@@ -1,4 +1,5 @@
 import tensorflow as tf # type: ignore
+import load_data
 
 def main() -> None:
     pass
