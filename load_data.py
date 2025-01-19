@@ -10,17 +10,13 @@ load_dotenv()
 np.set_printoptions(precision=3, suppress=True)
 
 #function definitions
-def connect(LIVE_API_KEY, LIVE_SECRET_KEY, LIVE_BASE_URL):
-    live_api = tradeapi.REST(LIVE_API_KEY, LIVE_SECRET_KEY, LIVE_BASE_URL, api_version='v2')
+def connect():
+    live_api = tradeapi.REST(
+        os.getenv("KEY"), 
+        os.getenv("SECRET"), 
+        os.getenv("ENDPOINT"), 
+        api_version='v2')
     return live_api
-
-def get_api_keys() -> dict:
-    ALPACA_KEYS:list[str] = {
-        "TRADE_API_ENDPOINT":os.getenv("ENDPOINT"),
-        "TRADE_API_SECRET":os.getenv("SECRET"),
-        "TRADE_API_KEY":os.getenv("KEY")
-    }
-    return ALPACA_KEYS
 
 def get_training_data(file:str) -> list:
     training_data = pd.read_csv(file,names = ["Date", 
@@ -39,6 +35,7 @@ def get_training_data(file:str) -> list:
 def get_bid_ask_price(symbol:str, live_api) -> float:
     try:
         quote = live_api.get_latest_quote(symbol.replace('-', '.'))
+        print(quote)
         bid_price = quote.bp
         ask_price = quote.ap
     except Exception as e:
@@ -47,6 +44,9 @@ def get_bid_ask_price(symbol:str, live_api) -> float:
         return None
     return [bid_price, ask_price]
 
+def calculate_average_true_range():
+    pass
+
 if __name__ == "__main__":
     ALPACA_KEYS = get_api_keys();
-    print(get_bid_ask_price("TSLA",connect(ALPACA_KEYS["TRADE_API_KEY"],ALPACA_KEYS["TRADE_API_SECRET"],ALPACA_KEYS["TRADE_API_ENDPOINT"])))
+    print(get_bid_ask_price("TSLA",))
