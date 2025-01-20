@@ -32,9 +32,9 @@ def get_training_data(file:str) -> list:
     training_data_features = training_data_features.astype(np.float32)
     return(training_data_features)
 
-def get_bid_ask_price(symbol:str, live_api) -> float:
+def get_bid_ask_price(symbol:str, API) -> float:
     try:
-        quote = live_api.get_latest_quote(symbol.replace('-', '.'))
+        quote = API.get_latest_quote(symbol.replace('-', '.'))
         bid_price = quote.bp
         ask_price = quote.ap
     except Exception as e:
@@ -54,7 +54,7 @@ def get_true_range(high:float, low:float, closing_price:float) -> float:
 def calculate_current_average_trading_range(past_atr:float, true_range:float, periods:int=14):
     return ((past_atr*(periods-1)) + true_range)/periods
 
-def calculate_past_15m_average_trading_range(API, symbol:str):
+def calculate_past_15m_average_trading_range(symbol:str, API) -> tuple:
     cvs_bars_data = API.get_bars(symbol, TimeFrame.Hour, "2021-06-08", "2021-06-08", adjustment='raw', feed="IEX").df
     clean_bars_data = np.array(cvs_bars_data)
     clean_bars_data = clean_bars_data.astype(np.float64)
@@ -65,7 +65,7 @@ def calculate_past_15m_average_trading_range(API, symbol:str):
             continue
         total += get_true_range(clean_bars_data[i][1],clean_bars_data[i][2],clean_bars_data[i-1][0])
     atr:float = total/i
-    return atr
+    return (atr, clean_bars_data[i][0])
 
 if __name__ == "__main__":
     pass
