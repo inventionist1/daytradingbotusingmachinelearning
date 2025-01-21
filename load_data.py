@@ -10,6 +10,7 @@ np.set_printoptions(precision=3, suppress=True)
 
 #function definitions
 def connect():
+    print(os.getenv("KEY"))
     live_api = tradeapi.REST(
         os.getenv("KEY"), 
         os.getenv("SECRET"), 

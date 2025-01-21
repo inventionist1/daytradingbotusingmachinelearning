@@ -13,18 +13,18 @@ def main() -> None:
     global API, SYMBOL
     bid_price, ask_price = data.get_bid_ask_price(SYMBOL,API)
     atr, curr_high, curr_low = IndATR.calculate_current_average_trading_range(ask_price,SYMBOL,API)
-    
+    print("bid price:",bid_price,"ask price:",ask_price,"\natr:",atr,"current high",curr_high,"current low",curr_low)
 
 if __name__ == "__main__":
     init()
     time_till_open = data.get_time_till_market_open(API)
-    if(time_till_open.total_seconds() > 0):
+    if(type(time_till_open) != int):
         time_till_open_components = time_till_open.components
         print("Market is closed, market will reopen in",time_till_open_components.days,
               "days,",time_till_open_components.hours,"hours,",
               time_till_open_components.minutes,"minutes, and",
               time_till_open_components.seconds, "seconds")
-    while time_till_open.total_seconds() == 0:
+    while time_till_open == 0:
         initintual_time = time.monotonic()
         main()
         final_time = time.monotonic()
