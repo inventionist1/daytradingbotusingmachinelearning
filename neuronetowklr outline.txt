@@ -1,0 +1,31 @@
+inputs:
+current atr
+current bid
+current ask
+current high
+current low
+current open
+past 30m bars of data
+    open
+    close
+    high
+    low
+wether there is an active trade
+price trade bought at 
+
+128 input nodes
+
+
+
+
+hidden layers:
+4*64 hidden layer relu
+
+
+
+
+outputs:
+sell (sigmoid), sells when over 80%
+buy (sigmoid), buys when over 80%
+
+2 output nodes
