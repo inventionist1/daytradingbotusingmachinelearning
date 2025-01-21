@@ -1,44 +1,35 @@
 #import tensorflow as tf # type: ignore
 import load_data as data
 import time
-import datetime
+import average_trading_range as IndATR
 #needs pythoin 3.10 or above at minimum
 
-
 def init() -> None:
-    global API, SYMBOL, past_atr, last_bar_closing_price, curr_high, curr_low
+    global API, SYMBOL
     API = data.connect()
-    SYMBOL = "AAPL"
-    past_atr, last_bar_closing_price = data.calculate_past_15m_average_trading_range(SYMBOL,API)
-    bid_price, ask_price = data.get_bid_ask_price(SYMBOL,API)
-    curr_high = ask_price
-    curr_low = ask_price
-    
+    SYMBOL = "TSLA"
 
 def main() -> None:
-    global API, SYMBOL, past_atr, last_bar_closing_price, curr_high, curr_low
+    global API, SYMBOL
     bid_price, ask_price = data.get_bid_ask_price(SYMBOL,API)
-    if(datetime.datetime.now().strftime('%S') == "00"):
-        curr_high = ask_price
-        curr_low = ask_price
-        past_atr = data.calculate_past_15m_average_trading_range(SYMBOL,API)
-    if(ask_price > curr_high):
-        curr_high = ask_price
-    if(ask_price < curr_low):
-        curr_low = ask_price
-    atr = data.calculate_current_average_trading_range(past_atr, data.get_true_range(curr_high,curr_low,last_bar_closing_price))
-
-
+    atr, curr_high, curr_low = IndATR.calculate_current_average_trading_range(ask_price,SYMBOL,API)
     
 
 if __name__ == "__main__":
     init()
-    while True:
-        time0 = time.monotonic()
+    time_till_open = data.get_time_till_market_open(API)
+    if(time_till_open.total_seconds() > 0):
+        time_till_open_components = time_till_open.components
+        print("Market is closed, market will reopen in",time_till_open_components.days,
+              "days,",time_till_open_components.hours,"hours,",
+              time_till_open_components.minutes,"minutes, and",
+              time_till_open_components.seconds, "seconds")
+    while time_till_open.total_seconds() == 0:
+        initintual_time = time.monotonic()
         main()
-        time1 = time.monotonic()
-        if(1-(time1-time0) > 0):
-            time.sleep(1-(time1-time0))
+        final_time = time.monotonic()
+        delta_time = final_time-initintual_time
+        if(1-delta_time >= 0):
+            time.sleep(1-(delta_time))
         else:
-            print("Can't keep up! running", int((1-(time1-time0))*-1000), "ms behind!")
-        
+            print("Can't keep up! running", int((1-delta_time)*-1000), "ms behind!")    
